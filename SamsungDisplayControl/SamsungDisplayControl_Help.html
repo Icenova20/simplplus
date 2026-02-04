@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Display Control - Module Help</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #000; /* Black background for contrast */
+            border-bottom: 3px solid #e31b23; /* Red accent */
+            padding: 20px 30px;
+            margin: -40px -40px 30px -40px; /* Full width inside container */
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .branding {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo-img {
+            height: 40px;
+            margin-right: 15px;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e31b23; /* Taurus Red */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .module-title {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 300;
+        }
+        h2 {
+            color: #e31b23; /* Red headers */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #444;
+            margin-top: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 3px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .badge-digital { background-color: #0000FF; } /* SIMPL Blue */
+        .badge-analog { background-color: #FF0000; }  /* SIMPL Red */
+        .badge-string { background-color: #000000; }  /* SIMPL Black */
+        .badge-parameter { background-color: #008000; } /* Taurus Green */
+        .note {
+            background-color: #fff0f0; /* Light red/pink tint */
+            border-left: 5px solid #e31b23;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        a { color: #e31b23; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <a href="https://taurustechinc.com" class="branding">
+            <img src="https://taurustechinc.com/wp-content/uploads/2022/03/Taurus-Logo-Side-e1646336289513.png" alt="Taurus Tech Logo" class="logo-img">
+        </a>
+        <div class="module-title">Samsung Display Control</div>
+    </header>
+
+    <p>This SIMPL+ module provides robust 2-way control for Samsung Commercial (MDC) and Consumer (EX-Link) displays. It features automatic protocol detection and adaptive command formatting.</p>
+
+    <h2>Device Configuration</h2>
+    <p>To ensure proper communication, configure the Samsung Display with the following settings:</p>
+    
+    <h3>Hardware Connections</h3>
+    <ul>
+        <li><strong>Commercial (MDC):</strong> Connect via DB9 RS232 Input.</li>
+        <li><strong>Consumer (EX-Link):</strong> Connect via 3.5mm EX-Link (Service) jack. Requires a stereo 3.5mm to DB9 adapter (Tip=RX, Ring=TX, Sleeve=GND).</li>
+    </ul>
+
+    <h3>Menu Settings</h3>
+    <ul>
+        <li><strong>Display ID:</strong> Set to <code>1</code> (or match the <code>p_nDisplayID</code> parameter).
+            <br><em>Home &gt; ID Setup &gt; 1</em>
+        </li>
+        <li><strong>PC Connection:</strong> Set to RS232.
+            <br><em>Home &gt; PC Connection &gt; RS232</em>
+        </li>
+        <li><strong>Network Standby / Power On:</strong> Enable to allow "Power On" commands while the TV is off.
+            <br><em>Menu &gt; Network &gt; Expert Settings &gt; Power On with Mobile</em> (or similar)
+        </li>
+    </ul>
+
+    <h3>COM Port Settings (Crestron)</h3>
+    <ul>
+        <li><strong>Baud Rate:</strong> 9600</li>
+        <li><strong>Data Bits:</strong> 8</li>
+        <li><strong>Parity:</strong> None</li>
+        <li><strong>Stop Bits:</strong> 1</li>
+        <li><strong>Handshaking:</strong> None</li>
+    </ul>
+
+    <div class="note">
+        <strong>Protocol Auto-Detection:</strong> This module defaults to <strong>MDC Mode</strong> (Commercial). To switch to <strong>EX-Link Mode</strong> (Consumer), the module must receive at least one valid EX-Link response packet (starting with <code>0x08</code>) from the display.
+    </div>
+
+    <h2>Signal Definitions</h2>
+
+    <h3>Inputs (Control)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Signal Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Power_On_b / Off_b</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Pulse <strong>High (1)</strong> to turn the display On or Off.</td>
+            </tr>
+            <tr>
+                <td>Volume_Up_b / Down_b</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Pulse <strong>High (1)</strong> to increment or decrement volume.</td>
+            </tr>
+            <tr>
+                <td>Mute_Toggle_b</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Pulse <strong>High (1)</strong> to toggle mute state.</td>
+            </tr>
+            <tr>
+                <td>Input_HDMI1_b ...</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Pulse <strong>High (1)</strong> to select the corresponding input.</td>
+            </tr>
+            <tr>
+                <td>Keypad_..._b (0-9, Menu, etc.)</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Pulse <strong>High (1)</strong> to emulate a remote button press (Parity: ExLink 0x0D / MDC 0xFE).</td>
+            </tr>
+            <tr>
+                <td>Set_Volume_n</td>
+                <td><span class="badge badge-analog">ANALOG</span></td>
+                <td>Decimal value. Range: <code>0d</code> to <code>100d</code>.</td>
+            </tr>
+            <tr>
+                <td>From_Device_s</td>
+                <td><span class="badge badge-string">STRING</span></td>
+                <td>Raw RS232/EX-Link data. Connect to COM Port <strong>RX$</strong>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Outputs (Feedback)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Signal Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>To_Device_s</td>
+                <td><span class="badge badge-string">STRING</span></td>
+                <td>Formatted Command String. Connect to COM Port <strong>TX$</strong>.</td>
+            </tr>
+            <tr>
+                <td>Power_Is_On_fb</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td><strong>High (1)</strong> = On; <strong>Low (0)</strong> = Off.</td>
+            </tr>
+            <tr>
+                <td>Volume_Level_fb</td>
+                <td><span class="badge badge-analog">ANALOG</span></td>
+                <td>Decimal value. Range: <code>0d</code> to <code>100d</code>.</td>
+            </tr>
+            <tr>
+                <td>Mute_Is_On_fb</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td><strong>High (1)</strong> = Muted; <strong>Low (0)</strong> = Unmuted.</td>
+            </tr>
+            <tr>
+                <td>Protocol_Mode_fb</td>
+                <td><span class="badge badge-analog">ANALOG</span></td>
+                <td>Decimal value. <code>1d</code> = MDC, <code>2d</code> = EX-Link.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Parameters</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Parameter Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>p_nDisplayID</td>
+                <td><span class="badge badge-parameter">INTEGER</span></td>
+                <td>The Display ID set in the TV menu. Default is usually <code>1</code> (0x01) or <code>0</code> (0x00).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <footer>
+        &copy; 2025 Taurus Tech Inc. | <a href="https://taurustechinc.com">www.taurustechinc.com</a>
+    </footer>
+</div>
+
+</body>
+</html>
