@@ -160,7 +160,12 @@
     </ul>
 
     <div class="note">
-        <strong>Protocol Auto-Detection:</strong> This module defaults to <strong>MDC Mode</strong> (Commercial). To switch to <strong>EX-Link Mode</strong> (Consumer), the module must receive at least one valid EX-Link response packet (starting with <code>0x08</code>) from the display.
+        <strong>Adaptive Polling & Protocol Detection:</strong> This module features an intelligent polling engine that defaults to <strong>MDC Mode</strong>. 
+        <ul>
+            <li><strong>Polling Enable:</strong> Use <code>Enable_Polling_b</code> to start/stop the feedback engine. It defaults to <strong>Enabled</strong>.</li>
+            <li><strong>Auto-Switching:</strong> If the display fails to respond to 3 consecutive polls, the module will automatically switch between <strong>MDC</strong> and <strong>EX-Link</strong> protocols and issue a warning to the console.</li>
+            <li><strong>Broadcast Support:</strong> Polling uses the Broadcast ID (0x00) to ensure responses even if the ID is unknown, but will warn if the TV's ID does not match the <code>p_nDisplayID</code> parameter.</li>
+        </ul>
     </div>
 
     <h2>Signal Definitions</h2>
@@ -175,6 +180,11 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td>Enable_Polling_b</td>
+                <td><span class="badge badge-digital">DIGITAL</span></td>
+                <td>Set <strong>High (1)</strong> to enable the status polling loop. Defaults to <strong>High</strong> on startup.</td>
+            </tr>
             <tr>
                 <td>Power_On_b / Off_b</td>
                 <td><span class="badge badge-digital">DIGITAL</span></td>
