@@ -32,7 +32,7 @@ Follow the prompts to define your Digital, Analog, and Serial inputs/outputs.
 To ensure the module symbol looks professional in SIMPL Windows, align Inputs and Outputs using the `_SKIP_` keyword.
 *   **Signal Alignment:** If an Input has no corresponding Output at the same index, use `_SKIP_` on the Output side to maintain horizontal alignment for subsequent signals.
 *   **Parameter Placement:** To push Parameters to the **bottom** of the symbol, insert a `_SKIP_` for every row used by signal pins (Inputs/Outputs).
-    *   *Rule:** Number of Skips = Total Number of Input/Output Rows used.
+    *   *Rule:* Number of Skips = Total Number of Input/Output Rows used.
 
 #### Naming Conventions (Hungarian Notation)
 *   `_b`: Digital (Boolean) e.g., `Power_On_b`
