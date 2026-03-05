@@ -1,0 +1,11 @@
+{
+    "TargetSimplDir": "simpl",
+    "Modules": [
+        "CiscoExternalSource",
+        "SonosControl",
+        "ShureMxw",
+        "PlanarDisplay",
+        "NvxRouteManager",
+        "ShureMxa920"
+    ]
+}

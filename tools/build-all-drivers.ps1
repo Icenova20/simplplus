@@ -7,16 +7,15 @@ $SplusccPath = "C:\Program Files (x86)\Crestron\Simpl\Spluscc.exe"
 $WorkspaceRoot = Split-Path $PSScriptRoot -Parent
 $BaseDir = Join-Path $WorkspaceRoot "modules\drivers"
 $ModularSimplDir = Join-Path $WorkspaceRoot "modules\simpl"
-$ProjectLogicDir = Join-Path $WorkspaceRoot "projects\LocktonDunning_GranitePark(JT022716)\simpl"
-$ExternalProjectDir = "D:\Projects\Lockton Dunning Benefits Series - Granite Park AV RFP (JT022716)\TR,BR,RR\CODE"
 
 # Tool Validation
 if (-not (Test-Path $msbuildPath)) { Write-Error "MSBuild not found at $msbuildPath"; exit 1 }
 if (-not (Test-Path $SplusccPath)) { Write-Error "Simpl+ Compiler not found at $SplusccPath"; exit 1 }
 
+if (-not (Test-Path $ModularSimplDir)) { New-Item -ItemType Directory -Path $ModularSimplDir | Out-Null }
+
 $script:buildLog = @()
 function Add-BuildLogEntry { param($Name, $Status, $Message) $script:buildLog += [PSCustomObject]@{ Name = $Name; Status = $Status; Message = $Message } }
-
 
 $Projects = @(
     "CiscoExternalSource\CiscoExternalSource.csproj",
@@ -35,7 +34,7 @@ foreach ($ProjRelPath in $Projects) {
     & $msbuildPath $ProjPath /t:Build /p:Configuration=Release /p:Platform="Any CPU" /v:n
     
     if ($LASTEXITCODE -eq 0) {
-        # Copy CLZ to Simpl and Project directories
+        # Copy CLZ to Simpl directory
         $ProjName = [System.IO.Path]::GetFileNameWithoutExtension($ProjRelPath)
         $ClzSearch = Get-ChildItem -Path (Split-Path $ProjPath) -Filter "$ProjName.clz" -Recurse | Select-Object -First 1
         
@@ -43,17 +42,8 @@ foreach ($ProjRelPath in $Projects) {
             $ClzPath = $ClzSearch.FullName
             # Deploy to production module library
             Copy-Item $ClzPath $ModularSimplDir -Force
-            # Deploy to active project directory
-            Copy-Item $ClzPath $ExternalProjectDir -Force
             
-            # Find and copy USP source if it exists in modular folder
-            $UspMatch = "*" + ($ProjName -replace "Driver", "") + "*.usp"
-            $UspPath = Get-ChildItem -Path $ModularSimplDir -Filter $UspMatch | Select-Object -ExpandProperty FullName
-            if ($UspPath) {
-                Copy-Item $UspPath $ExternalProjectDir -Force
-            }
-            
-            Write-Host "Deployed: $ProjName.clz and USP" -ForegroundColor Green
+            Write-Host "Deployed: $ProjName.clz" -ForegroundColor Green
             Add-BuildLogEntry $ProjName "SUCCESS" "C# Build and CLZ Deployment complete."
         }
     }
@@ -65,7 +55,6 @@ foreach ($ProjRelPath in $Projects) {
 
 Write-Host "`nWiping SPlsWork Caches..." -ForegroundColor Cyan
 Remove-Item -Path (Join-Path $ModularSimplDir "SPlsWork") -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -Path (Join-Path $ProjectLogicDir "SPlsWork") -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host "`nCompiling SIMPL+ Modular Wrappers..." -ForegroundColor Cyan
 $ModularUspFiles = Get-ChildItem -Path $ModularSimplDir -Filter "*.usp"
@@ -74,7 +63,6 @@ foreach ($Usp in $ModularUspFiles) {
     & $SplusccPath /rebuild $Usp.FullName /target series4
     if ($LASTEXITCODE -eq 0) {
         $ushPath = Join-Path $ModularSimplDir ($Usp.Name -replace ".usp", ".ush")
-        Copy-Item $ushPath $ExternalProjectDir -Force
         
         # Immediate UMC Generation for this USH
         Write-Host "Generating UMC for $($Usp.Name)..." -ForegroundColor Cyan
@@ -83,7 +71,6 @@ foreach ($Usp in $ModularUspFiles) {
         $umcName = $Usp.Name -replace ".usp", ".umc"
         $umcPath = Join-Path $ModularSimplDir $umcName
         if (Test-Path $umcPath) {
-            Copy-Item $umcPath $ExternalProjectDir -Force
             Write-Host "Deployed: $umcName" -ForegroundColor Green
             Add-BuildLogEntry $Usp.Name "SUCCESS" "Compiled USP and Generated/Deployed UMC."
         }
@@ -94,23 +81,6 @@ foreach ($Usp in $ModularUspFiles) {
     else {
         Write-Host "`nERROR: SIMPL+ compilation failed for $($Usp.Name)" -ForegroundColor Red
         Add-BuildLogEntry $Usp.Name "FAILED" "Simpl+ Compiler returned non-zero exit code."
-    }
-}
-
-Write-Host "`nCompiling SIMPL+ Project Logic..." -ForegroundColor Cyan
-$LogicUspFiles = Get-ChildItem -Path $ProjectLogicDir -Filter "*.usp"
-foreach ($Usp in $LogicUspFiles) {
-    Write-Host "Compiling Logic: $($Usp.Name)..." -ForegroundColor Yellow
-    & $SplusccPath /rebuild $Usp.FullName /target series4
-    if ($LASTEXITCODE -eq 0) {
-        $ushPath = Join-Path $ProjectLogicDir ($Usp.Name -replace ".usp", ".ush")
-        Copy-Item $ushPath $ExternalProjectDir -Force
-        Write-Host "Deployed Logic: $($Usp.Name)" -ForegroundColor Green
-        Add-BuildLogEntry $Usp.Name "SUCCESS" "Compiled Project Logic."
-    }
-    else {
-        Write-Host "`nERROR: Logic compilation failed for $($Usp.Name)" -ForegroundColor Red
-        Add-BuildLogEntry $Usp.Name "FAILED" "Logic compilation failed."
     }
 }
 
