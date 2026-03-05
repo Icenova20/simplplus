@@ -32,6 +32,7 @@ DIGITAL_INPUT  Mute_On[8];
 DIGITAL_INPUT  Mute_Off[8];
 
 DIGITAL_OUTPUT Mute_FB[8];
+DIGITAL_OUTPUT Button_Press_FB[8];
 ANALOG_OUTPUT  Battery_Level[8];
 
 STRING_PARAMETER IP_Address[50];
@@ -51,6 +52,16 @@ CALLBACK FUNCTION OnMuteChange()
     if (idx >= 1 && idx <= 8)
     {
         Mute_FB[idx] = _driver.CurrentMuteState;
+    }
+}
+
+CALLBACK FUNCTION OnButtonChange()
+{
+    integer idx;
+    idx = _driver.CurrentButtonIndex;
+    if (idx >= 1 && idx <= 8)
+    {
+        Button_Press_FB[idx] = _driver.CurrentButtonState;
     }
 }
 
@@ -88,4 +99,5 @@ Function Main()
 {
     WaitForInitializationComplete();
     RegisterDelegate(_driver, OnMuteChanged, OnMuteChange);
+    RegisterDelegate(_driver, OnButtonChanged, OnButtonChange);
 }

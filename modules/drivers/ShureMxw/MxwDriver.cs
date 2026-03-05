@@ -14,10 +14,13 @@ namespace ShureMxw
         private string _rxBuffer = "";
         private const int Port = 2202;
 
-        public EmptyCallbackHandler OnMuteChanged { get; set; }
+    public EmptyCallbackHandler OnMuteChanged { get; set; }
+    public EmptyCallbackHandler OnButtonChanged { get; set; }
 
-        public ushort CurrentMuteIndex { get; private set; }
-        public ushort CurrentMuteState { get; private set; }
+    public ushort CurrentMuteIndex { get; private set; }
+    public ushort CurrentMuteState { get; private set; }
+    public ushort CurrentButtonIndex { get; private set; }
+    public ushort CurrentButtonState { get; private set; }
 
         public MxwDriver()
         {
@@ -110,6 +113,21 @@ namespace ShureMxw
                         CurrentMuteIndex = index;
                         CurrentMuteState = state;
                         if (OnMuteChanged != null) OnMuteChanged();
+                    }
+                }
+            }
+            // Parse strings like: "REP 1 BUTTON ON"
+            else if (cmd.StartsWith("REP ") && cmd.Contains(" BUTTON "))
+            {
+                string[] parts = cmd.Split(' ');
+                if (parts.Length >= 4)
+                {
+                    if (ushort.TryParse(parts[1], out ushort index))
+                    {
+                        ushort state = (ushort)(parts[3] == "ON" ? 1 : 0);
+                        CurrentButtonIndex = index;
+                        CurrentButtonState = state;
+                        if (OnButtonChanged != null) OnButtonChanged();
                     }
                 }
             }

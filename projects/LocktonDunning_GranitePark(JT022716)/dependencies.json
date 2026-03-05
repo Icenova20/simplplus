@@ -1,7 +1,7 @@
 {
     "TargetSimplDir": "simpl",
     "Modules": [
-        "CiscoExternalSource",
+        "Cisco_ExternalSource_v2",
         "SonosControl",
         "ShureMxw",
         "PlanarDisplay",

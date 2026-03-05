@@ -34,7 +34,7 @@ Write-Host "Pulling dependencies for $ProjectName..." -ForegroundColor Cyan
 foreach ($Mod in $Deps.Modules) {
     Write-Host "  Copying $Mod..."
     
-    $SearchPattern = $Mod -replace "([a-z])([A-Z])", '$1*$2'
+    $SearchPattern = $Mod -creplace "([a-z])([A-Z])", '$1*$2'
     
     $Extensions = @(".clz", ".ush", ".umc", ".usp")
     foreach ($Ext in $Extensions) {

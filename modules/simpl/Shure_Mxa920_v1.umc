@@ -177,9 +177,9 @@ n1I=5
 n1O=1
 mI=5
 I1=100
-I2=9999
+I2=8201
 I3=101
-I4=9999
+I4=8202
 I5=102
 mO=1
 tO=1
@@ -226,7 +226,7 @@ Nm=Initialize
 ]
 [
 ObjTp=Sg
-H=9999
+H=8201
 Nm=[~UNUSED~]
 SgTp=31
 ]
@@ -237,7 +237,7 @@ Nm=Mute_On
 ]
 [
 ObjTp=Sg
-H=9999
+H=8202
 Nm=[~UNUSED~]
 SgTp=31
 ]
