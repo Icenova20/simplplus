@@ -3,9 +3,18 @@
 *.err
 *.pzt
 *.sig
+*.lpz.hash
 *.smw.bak
+*.smw.asv
 *.umc.bak
 *.usp.bak
+*.dip
+*.sm2
+*.smft
+
+# Archives and Compiled Results (Optional - remove if you want to commit binaries)
+*_archive.zip
+*_compiled.zip
 
 # SIMPL# (C#) Build Artifacts
 **/obj/
